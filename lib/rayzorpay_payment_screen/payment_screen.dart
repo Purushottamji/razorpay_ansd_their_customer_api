@@ -12,32 +12,37 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   late Razorpay razorpay;
-  TextEditingController payController=TextEditingController();
+  TextEditingController payController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
 
-    razorpay=Razorpay();
-    razorpay?.on(Razorpay.EVENT_PAYMENT_ERROR, (PaymentFailureResponse value){
+    razorpay = Razorpay();
+    razorpay?.on(Razorpay.EVENT_PAYMENT_ERROR, (PaymentFailureResponse value) {
       Fluttertoast.showToast(msg: 'Error ${value.error} ${value.message}');
     });
-    
-    razorpay?.on(Razorpay.EVENT_PAYMENT_SUCCESS, (PaymentSuccessResponse value){
+
+    razorpay?.on(Razorpay.EVENT_PAYMENT_SUCCESS, (
+      PaymentSuccessResponse value,
+    ) {
       Fluttertoast.showToast(msg: 'Payment Success ${value.paymentId}');
     });
-    
-    razorpay?.on(Razorpay.EVENT_EXTERNAL_WALLET, (ExternalWalletResponse value){
+
+    razorpay?.on(Razorpay.EVENT_EXTERNAL_WALLET, (
+      ExternalWalletResponse value,
+    ) {
       Fluttertoast.showToast(msg: 'External Wallet ${value.walletName}');
     });
   }
 
-   openPayment(){
-    if(payController.text.isEmpty){
+  openPayment() {
+    if (payController.text.isEmpty) {
       Fluttertoast.showToast(msg: "Enter amount");
       return;
     }
 
-    var amount =int.parse(payController.text.trim()) *100;
+    var amount = int.parse(payController.text.trim()) * 100;
     var options = {
       'key': 'rzp_test_R7xQYpa54gC33c',
       'amount': amount,
@@ -46,15 +51,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
       // 'order_id': 'order_EMBFqjDHEEn80l', // Generate order_id using Orders API
       'description': 'Fine T-Shirt',
       'timeout': 60,
-      'prefill': {
-        'contact': '8507536900',
-        'email': 'purushottam2fx@gmail.com',
-      },
+      'prefill': {'contact': '8507536900', 'email': 'purushottam2fx@gmail.com'},
     };
 
-    try{
+    try {
       razorpay?.open(options);
-    }catch(e){
+    } catch (e) {
       debugPrint(e.toString());
     }
   }
@@ -64,6 +66,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     razorpay.clear();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,17 +91,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                 ),
-                ElevatedButton.icon(onPressed: () {
-                  openPayment();
-                }, label: Text('Pay'),icon: Icon(Icons.currency_rupee),)
+                ElevatedButton.icon(
+                  onPressed: () {
+                    openPayment();
+                  },
+                  label: Text('Pay'),
+                  icon: Icon(Icons.currency_rupee),
+                ),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(onPressed:  () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => RazorpayFeaturesScreen(),));
-      },child: Icon(Icons.paypal_outlined,color: Colors.blue,),),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RazorpayFeaturesScreen()),
+          );
+        },
+        child: Icon(Icons.paypal_outlined, color: Colors.blue),
+      ),
     );
   }
 }
